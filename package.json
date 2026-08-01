@@ -1,0 +1,29 @@
+{
+  "name": "@research-workbench/zotero-mcp",
+  "version": "0.1.0",
+  "description": "Capability-honest Zotero MCP adapter for Research Workbench",
+  "type": "module",
+  "bin": {
+    "zotero-mcp": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "clean": "node -e \"require('node:fs').rmSync('dist',{recursive:true,force:true})\"",
+    "test": "tsx --test test/*.test.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.30.0",
+    "zod": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "tsx": "^4.23.1",
+    "typescript": "^7.0.2"
+  },
+  "license": "MIT",
+  "private": true
+}

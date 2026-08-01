@@ -1,0 +1,28 @@
+{
+  "items": [
+    {
+      "key": "PHONON01",
+      "version": 7,
+      "data": {
+        "key": "PHONON01",
+        "version": 7,
+        "itemType": "journalArticle",
+        "title": "Phonon transport in layered materials",
+        "creators": [{ "creatorType": "author", "firstName": "Ada", "lastName": "Lovelace" }],
+        "date": "2026",
+        "DOI": "10.1000/phonon.1",
+        "url": "https://example.test/phonon",
+        "tags": [{ "tag": "phonon" }],
+        "collections": ["COLL0001"]
+      }
+    }
+  ],
+  "children": [
+    { "key": "NOTE0001", "version": 1, "data": { "itemType": "note", "note": "<p>Evidence note</p>" } },
+    { "key": "ATTACH01", "version": 1, "data": { "itemType": "attachment", "title": "PDF" } }
+  ],
+  "collections": [
+    { "key": "COLL0001", "version": 3, "data": { "key": "COLL0001", "name": "Physics", "parentCollection": false } }
+  ],
+  "tags": [{ "tag": "phonon", "meta": { "numItems": 1 } }]
+}
