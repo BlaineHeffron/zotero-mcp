@@ -137,6 +137,43 @@ describe("mandatory failure modes", () => {
   });
 });
 
+describe("upstream URL security", () => {
+  it("rejects remote hosts, non-HTTP schemes, and userinfo", () => {
+    for (const baseUrl of [
+      "http://example.com:23119",
+      "http://127.0.0.1.example:23119",
+      "http://[::2]:23119",
+      "https://127.0.0.1:23119",
+      "http://user:secret@127.0.0.1:23119",
+    ]) {
+      assert.throws(() => new ZoteroClient({ baseUrl }), /plain HTTP.*exact loopback hostname.*no userinfo/i);
+    }
+  });
+
+  it("does not follow a redirect or forward the write bearer", async () => {
+    let sinkRequests = 0;
+    const sinkUrl = await mockServer((request, response) => {
+      sinkRequests++;
+      assert.equal(request.headers.authorization, undefined);
+      json(response, 200, { leaked: true });
+    });
+    const redirectUrl = await mockServer((request, response) => {
+      assert.equal(request.headers.authorization, "Bearer dummy-test-token");
+      response.writeHead(307, { Location: `${sinkUrl}/leak` });
+      response.end();
+    });
+    const dir = await mkdtemp(join(tmpdir(), "zotero-mcp-"));
+    const tokenFile = join(dir, "token.json");
+    await writeFile(tokenFile, JSON.stringify({ token: "dummy-test-token" }), { mode: 0o600 });
+
+    const result = await new ZoteroTools(new ZoteroClient({ baseUrl: redirectUrl, tokenFile }))
+      .call("zotero_create_note", { html: "<p>test</p>" });
+
+    assert.equal(result.isError, true);
+    assert.equal(sinkRequests, 0);
+  });
+});
+
 describe("health", () => {
   it("never errors and verifies an authenticated extension health response", async () => {
     const dir = await mkdtemp(join(tmpdir(), "zotero-mcp-"));

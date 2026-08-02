@@ -20,7 +20,7 @@ node dist/index.js
 
 Configuration:
 
-- `ZOTERO_MCP_BASE_URL` defaults to `http://127.0.0.1:23119`.
+- `ZOTERO_MCP_BASE_URL` defaults to `http://127.0.0.1:23119`. Only plain-HTTP URLs using the exact loopback hostnames `127.0.0.1`, `localhost`, or `[::1]` are accepted; userinfo is rejected and redirects are never followed.
 - `ZOTERO_MCP_TOKEN_FILE` defaults to
   `~/.research-workbench/zotero-bridge.json`.
 

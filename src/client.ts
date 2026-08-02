@@ -17,6 +17,20 @@ export interface ZoteroClientOptions {
 }
 
 const INSTALL_HINT = "Install and enable the Research Workbench Zotero extension.";
+const LOOPBACK_HOSTNAMES = new Set(["127.0.0.1", "localhost", "[::1]"]);
+
+function validateBaseUrl(value: string): string {
+  let url: URL;
+  try {
+    url = new URL(value);
+  } catch {
+    throw new WorkbenchError("invalid_input", "ZOTERO_MCP_BASE_URL must be a valid loopback HTTP URL.");
+  }
+  if (url.protocol !== "http:" || !LOOPBACK_HOSTNAMES.has(url.hostname) || url.username !== "" || url.password !== "") {
+    throw new WorkbenchError("invalid_input", "ZOTERO_MCP_BASE_URL must use plain HTTP, an exact loopback hostname (127.0.0.1, localhost, or [::1]), and no userinfo.");
+  }
+  return url.href.replace(/\/$/, "");
+}
 
 export class ZoteroClient {
   readonly baseUrl: string;
@@ -24,7 +38,7 @@ export class ZoteroClient {
   private readonly fetchImpl: typeof fetch;
 
   constructor(options: ZoteroClientOptions = {}) {
-    this.baseUrl = (options.baseUrl ?? process.env.ZOTERO_MCP_BASE_URL ?? "http://127.0.0.1:23119").replace(/\/$/, "");
+    this.baseUrl = validateBaseUrl(options.baseUrl ?? process.env.ZOTERO_MCP_BASE_URL ?? "http://127.0.0.1:23119");
     const configured = options.tokenFile ?? process.env.ZOTERO_MCP_TOKEN_FILE ?? "~/.research-workbench/zotero-bridge.json";
     this.tokenFile = configured.startsWith("~/") ? resolve(homedir(), configured.slice(2)) : resolve(configured);
     this.fetchImpl = options.fetchImpl ?? fetch;
@@ -48,6 +62,7 @@ export class ZoteroClient {
     try {
       const response = await this.fetchImpl(`${this.baseUrl}/api/`, {
         headers: { "Zotero-API-Version": "3" },
+        redirect: "error",
         signal: AbortSignal.timeout(2_000),
       });
       zoteroRunning = true;
@@ -62,6 +77,7 @@ export class ZoteroClient {
       if (token) headers.Authorization = `Bearer ${token}`;
       const response = await this.fetchImpl(`${this.baseUrl}/research-workbench/v1/health`, {
         headers,
+        redirect: "error",
         signal: AbortSignal.timeout(2_000),
       });
       writeApi = response.ok;
@@ -122,6 +138,7 @@ export class ZoteroClient {
       const init: RequestInit = {
         method,
         headers,
+        redirect: "error",
         signal: AbortSignal.timeout(10_000),
       };
       if (body !== undefined) init.body = JSON.stringify(body);
