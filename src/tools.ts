@@ -1,16 +1,19 @@
-import type { CallToolResult, Tool } from "@modelcontextprotocol/sdk/types.js";
-
+import type { CallToolResult, Tool } from "@modelcontextprotocol/server";
 import { ZoteroClient } from "./client.js";
 import { errorResult, okResult, WorkbenchError } from "./errors.js";
 
 type JsonObject = Record<string, unknown>;
 
-const objectSchema = (properties: Record<string, object>, required: string[] = [], additionalProperties = false) => ({
+const objectSchema = (
+  properties: Record<string, object>,
+  required: string[] = [],
+  additionalProperties = false,
+): Tool["inputSchema"] => ({
   type: "object",
   properties,
   required,
   additionalProperties,
-}) as const;
+}) as Tool["inputSchema"];
 
 const readAnnotations = { readOnlyHint: true, destructiveHint: false, openWorldHint: false };
 const writeAnnotations = { readOnlyHint: false, destructiveHint: false, openWorldHint: false };

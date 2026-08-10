@@ -5,6 +5,10 @@ It uses Zotero's built-in, GET-only local API for reads and the separately insta
 Research Workbench Zotero extension for authenticated writes. It never opens
 `zotero.sqlite` or the Zotero data directory.
 
+The stdio entry supports MCP `2026-07-28`'s stateless `server/discover` lifecycle and
+legacy initialize-based clients. Its static tool catalog is publicly cacheable for five
+minutes, reducing repeated catalog transfer and prompt churn.
+
 ## Requirements and setup
 
 - Node.js 20 or newer
@@ -15,7 +19,7 @@ Research Workbench Zotero extension for authenticated writes. It never opens
 npm install
 npm run build
 npm test
-node dist/index.js
+node dist/src/index.js
 ```
 
 Configuration:

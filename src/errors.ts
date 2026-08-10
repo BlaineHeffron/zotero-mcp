@@ -1,4 +1,4 @@
-import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
+import type { CallToolResult } from "@modelcontextprotocol/server";
 
 export const ERROR_CODES = [
   "upstream_unavailable",
